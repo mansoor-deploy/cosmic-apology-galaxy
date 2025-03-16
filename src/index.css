@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -33,22 +36,6 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -79,14 +66,6 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -97,5 +76,67 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .glass-morphism {
+    @apply bg-white/20 backdrop-blur-lg rounded-2xl border border-white/10 shadow-glass;
+  }
+
+  .neo-morphism {
+    @apply bg-white rounded-2xl shadow-neo;
+  }
+
+  .parallax-effect {
+    transform-style: preserve-3d;
+    transition: all 0.5s ease;
+  }
+
+  .typed-text {
+    @apply overflow-hidden whitespace-nowrap border-r-4 pr-1 animate-typing;
+  }
+
+  .bloom-card {
+    @apply bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-soft border border-bloom-primary/30;
+  }
+
+  .cosmic-card {
+    @apply bg-cosmic-primary/90 backdrop-blur-sm text-cosmic-text rounded-2xl p-8 shadow-soft border border-cosmic-secondary/30;
+  }
+
+  .puzzle-card {
+    @apply bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-soft border border-puzzle-primary/30;
+  }
+
+  .rainy-card {
+    @apply bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-soft border border-rainy-secondary/30;
+  }
+
+  .video-trigger {
+    @apply fixed bottom-10 right-10 bg-white/20 backdrop-blur-md p-4 rounded-full shadow-lg cursor-pointer transition-all duration-300 
+    hover:bg-white/40 hover:scale-110 z-50;
+  }
+
+  .petal {
+    @apply absolute rounded-full opacity-0 pointer-events-none;
+    animation: petal-fall linear forwards;
+    animation-duration: calc(10s + (var(--random) * 10s));
+    left: calc(var(--random) * 100%);
+    transform: rotate(calc(var(--random) * 360deg));
+  }
+
+  .ripple-container {
+    @apply relative overflow-hidden;
+  }
+
+  .ripple-effect {
+    @apply absolute rounded-full pointer-events-none bg-rainy-secondary/30;
+    animation: ripple 3s linear forwards;
+  }
+
+  .puzzle-piece {
+    @apply transition-all duration-300 cursor-pointer hover:scale-105;
   }
 }
