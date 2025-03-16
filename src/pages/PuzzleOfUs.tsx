@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Video, PuzzlePiece } from 'lucide-react';
+import { Video, Puzzle } from 'lucide-react';
 import BackToHome from '@/components/BackToHome';
 import VideoModal from '@/components/VideoModal';
 import AudioPlayer from '@/components/AudioPlayer';
@@ -90,7 +90,7 @@ const PuzzleOfUs = () => {
                   onClick={() => !piece.solved && handlePieceClick(piece.id)}
                 >
                   <div className="h-full flex items-center justify-center">
-                    <PuzzlePiece className={`h-12 w-12 ${piece.solved ? 'text-white' : 'text-puzzle-primary/50'}`} />
+                    <Puzzle className={`h-12 w-12 ${piece.solved ? 'text-white' : 'text-puzzle-primary/50'}`} />
                   </div>
                 </div>
               ))}
