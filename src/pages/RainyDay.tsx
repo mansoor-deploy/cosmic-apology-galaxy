@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Video, MapPin, Calendar, Flower, Heart, Send } from 'lucide-react';
+import { Video, MapPin, Calendar, Flower, Heart, Send, Image } from 'lucide-react';
 import VideoModal from '@/components/VideoModal';
 import AudioPlayer from '@/components/AudioPlayer';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from '@/components/ui/use-toast';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 // This would be a prop in production
 const defaultMessage = {
@@ -27,6 +28,14 @@ const flowers = [
   { id: "orchid", name: "Orchid", meaning: "Rare and delicate connection", level: 5 },
 ];
 
+// Shared moments images
+const sharedMoments = [
+  { id: 1, title: "Our first hike", url: "https://images.unsplash.com/photo-1472396961693-142e6e269027" },
+  { id: 2, title: "Beach sunset", url: "https://images.unsplash.com/photo-1465379944081-7f47de8d74ac" },
+  { id: 3, title: "Winter cabin", url: "https://images.unsplash.com/photo-1485833077593-4278bba3f11f" },
+  { id: 4, title: "Summer picnic", url: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07" },
+];
+
 const RainyDay = () => {
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,6 +46,8 @@ const RainyDay = () => {
   const [selectedFlower, setSelectedFlower] = useState(flowers[0].id);
   const [flowerSent, setFlowerSent] = useState(false);
   const [showInPersonApology, setShowInPersonApology] = useState(false);
+  const [showMemories, setShowMemories] = useState(false);
+  const [flowerShower, setFlowerShower] = useState<Array<{id: number, x: number, delay: number, rotate: number}>>([]);
   
   // Reference to get access to the stopAudio method
   const stopAudio = () => {
@@ -80,10 +91,28 @@ const RainyDay = () => {
     }, 3000);
   };
 
+  const createFlowerShower = () => {
+    const flowerCount = 30;
+    const newFlowers = Array.from({ length: flowerCount }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      delay: Math.random() * 3,
+      rotate: Math.random() * 360
+    }));
+    
+    setFlowerShower(newFlowers);
+    
+    // Clear flower shower after animation completes
+    setTimeout(() => {
+      setFlowerShower([]);
+    }, 8000);
+  };
+
   const handleSendFlower = () => {
     const flower = flowers.find(f => f.id === selectedFlower);
     setFlowerSent(true);
     setShowFlowerMenu(false);
+    createFlowerShower();
     
     toast({
       title: "Flower Delivered",
@@ -133,6 +162,41 @@ const RainyDay = () => {
               animationDelay: `${drop.delay}s`
             }}
           />
+        ))}
+      </div>
+      
+      {/* Flower shower animation */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        {flowerShower.map(flower => (
+          <div
+            key={flower.id}
+            className="absolute pointer-events-none"
+            style={{
+              left: `${flower.x}%`,
+              top: '-50px',
+              animationDelay: `${flower.delay}s`
+            }}
+          >
+            {selectedFlowerDetails?.id === "rose" && (
+              <Heart 
+                className="floating-heart text-rose-500" 
+                size={20 + Math.random() * 30}
+                style={{ transform: `rotate(${flower.rotate}deg)` }}
+              />
+            )}
+            {selectedFlowerDetails?.id !== "rose" && (
+              <Flower 
+                className={`floating-heart ${
+                  selectedFlowerDetails?.id === "daisy" ? "text-yellow-400" :
+                  selectedFlowerDetails?.id === "tulip" ? "text-pink-400" :
+                  selectedFlowerDetails?.id === "lily" ? "text-white" :
+                  "text-purple-400"
+                }`}
+                size={20 + Math.random() * 30}
+                style={{ transform: `rotate(${flower.rotate}deg)` }}
+              />
+            )}
+          </div>
         ))}
       </div>
       
@@ -270,6 +334,43 @@ const RainyDay = () => {
                   </div>
                 </PopoverContent>
               </Popover>
+            </div>
+          )}
+          
+          <Button 
+            onClick={() => setShowMemories(!showMemories)} 
+            className="w-full bg-rainy-primary/20 hover:bg-rainy-primary/30 text-rainy-text border border-rainy-primary/20"
+          >
+            <Image className="mr-2 h-4 w-4" />
+            Moments Spent Together
+          </Button>
+          
+          {showMemories && (
+            <div className="py-4 animate-fade-in bg-white/30 backdrop-blur-sm rounded-lg p-4">
+              <h3 className="font-serif text-center text-rainy-text mb-4">Our Memories</h3>
+              
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {sharedMoments.map((moment) => (
+                    <CarouselItem key={moment.id}>
+                      <div className="p-1">
+                        <div className="overflow-hidden rounded-lg">
+                          <img 
+                            src={moment.url} 
+                            alt={moment.title} 
+                            className="w-full h-48 object-cover hover:scale-105 transition-all duration-500"
+                          />
+                        </div>
+                        <p className="text-center mt-2 text-sm font-serif text-rainy-text/80">
+                          {moment.title}
+                        </p>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-0" />
+                <CarouselNext className="right-0" />
+              </Carousel>
             </div>
           )}
         </div>
