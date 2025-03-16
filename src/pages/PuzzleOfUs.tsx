@@ -34,7 +34,7 @@ const PuzzleOfUs = () => {
   const [puzzleSolved, setPuzzleSolved] = useState(false);
   const [puzzleShown, setPuzzleShown] = useState(false);
   const [matchedPairs, setMatchedPairs] = useState<number[]>([]);
-  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
+  const [selectedItems, setSelectedItems] = useState<{index: number, number: number}[]>([]);
   const [shuffledNumbers, setShuffledNumbers] = useState<number[]>([]);
   const [showInPersonApology, setShowInPersonApology] = useState(false);
   const [showMemories, setShowMemories] = useState(false);
@@ -62,12 +62,16 @@ const PuzzleOfUs = () => {
     // Ignore if already matched
     if (matchedPairs.includes(number)) return;
     
-    if (selectedNumber === null) {
-      // First selection
-      setSelectedNumber(number);
-    } else {
-      // Second selection
-      if (selectedNumber === number) {
+    // Ignore if already selected
+    if (selectedItems.some(item => item.index === index)) return;
+    
+    // Add to selected
+    const newSelected = [...selectedItems, { index, number }];
+    setSelectedItems(newSelected);
+    
+    // If we have 2 selections
+    if (newSelected.length === 2) {
+      if (newSelected[0].number === newSelected[1].number) {
         // Match found!
         setMatchedPairs([...matchedPairs, number]);
         
@@ -79,8 +83,10 @@ const PuzzleOfUs = () => {
         }
       }
       
-      // Reset selection
-      setSelectedNumber(null);
+      // Reset selection after a delay
+      setTimeout(() => {
+        setSelectedItems([]);
+      }, 1000);
     }
   };
   
@@ -107,6 +113,11 @@ const PuzzleOfUs = () => {
       description: `${defaultMessage.sender} has been notified that you declined the meeting.`,
     });
     setShowInPersonApology(false);
+  };
+
+  // Function to determine if a card is flipped
+  const isFlipped = (index: number) => {
+    return selectedItems.some(item => item.index === index) || matchedPairs.includes(shuffledNumbers[index]);
   };
 
   return (
@@ -148,21 +159,27 @@ const PuzzleOfUs = () => {
               <div className="w-full py-4 animate-fade-in">
                 <div className="grid grid-cols-4 gap-3">
                   {shuffledNumbers.map((number, index) => (
-                    <button
+                    <div
                       key={index}
                       onClick={() => handleNumberClick(index)}
                       className={`
-                        aspect-square rounded-lg font-montserrat font-bold text-xl flex items-center justify-center transition-all
-                        ${matchedPairs.includes(number) 
-                          ? 'bg-green-100 text-green-600 border-2 border-green-300' 
-                          : selectedNumber === number 
-                            ? 'bg-puzzle-primary/20 text-puzzle-primary border-2 border-puzzle-primary' 
-                            : 'bg-white text-puzzle-text border-2 border-puzzle-primary/20 hover:bg-puzzle-primary/10'
-                        }
+                        aspect-square rounded-lg font-montserrat font-bold text-xl flex items-center justify-center transition-all cursor-pointer
+                        ${isFlipped(index) 
+                          ? 'bg-white rotate-y-0' 
+                          : 'bg-puzzle-primary text-white rotate-y-180'}
                       `}
+                      style={{
+                        perspective: '1000px',
+                        transform: isFlipped(index) ? 'rotateY(0deg)' : 'rotateY(180deg)',
+                        transition: 'transform 0.6s',
+                      }}
                     >
-                      {number}
-                    </button>
+                      {isFlipped(index) && (
+                        <span className={matchedPairs.includes(number) ? 'text-green-600' : 'text-puzzle-text'}>
+                          {number}
+                        </span>
+                      )}
+                    </div>
                   ))}
                 </div>
                 <p className="text-center mt-4 text-sm text-puzzle-text/60">

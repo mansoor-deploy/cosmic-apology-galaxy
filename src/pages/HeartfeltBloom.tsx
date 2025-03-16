@@ -29,16 +29,10 @@ const sharedMoments = [
 const HeartfeltBloom = () => {
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [petals, setPetals] = useState<Array<{id: number, x: number, scale: number, delay: number, rotation: number}>>([]);
-  const [typingText, setTypingText] = useState("");
-  const [isTypingComplete, setIsTypingComplete] = useState(false);
-  const [typedMessage, setTypedMessage] = useState("");
-  const [showTypingInterface, setShowTypingInterface] = useState(false);
   const [showInPersonApology, setShowInPersonApology] = useState(false);
   const [floatingHearts, setFloatingHearts] = useState<Array<{id: number, x: number, y: number, scale: number, opacity: number}>>([]);
   const [showMemories, setShowMemories] = useState(false);
   const [acceptedApology, setAcceptedApology] = useState(false);
-  
-  const messageRef = useRef<HTMLTextAreaElement>(null);
   
   // Reference to get access to the stopAudio method
   const stopAudio = () => {
@@ -61,26 +55,6 @@ const HeartfeltBloom = () => {
     setPetals(newPetals);
   }, []);
   
-  // Handle typing animation
-  useEffect(() => {
-    const message = "Dear " + defaultMessage.recipient + ", " + defaultMessage.message;
-    
-    if (showTypingInterface && !isTypingComplete) {
-      let currentCharIndex = 0;
-      const typeNextChar = () => {
-        if (currentCharIndex < message.length) {
-          setTypingText(message.substring(0, currentCharIndex + 1));
-          currentCharIndex++;
-          setTimeout(typeNextChar, 50 + Math.random() * 50);
-        } else {
-          setIsTypingComplete(true);
-        }
-      };
-      
-      typeNextChar();
-    }
-  }, [showTypingInterface]);
-  
   const createFloatingHearts = () => {
     // Create 20 hearts at random positions
     const newHearts = Array.from({ length: 20 }, (_, i) => ({
@@ -99,18 +73,14 @@ const HeartfeltBloom = () => {
     }, 5000);
   };
   
-  const handleSendMessage = () => {
-    if (messageRef.current && messageRef.current.value) {
-      setTypedMessage(messageRef.current.value);
-      messageRef.current.value = "";
-      
-      createFloatingHearts();
-      
-      toast({
-        title: "Message Sent",
-        description: "Your heartfelt apology has been delivered.",
-      });
-    }
+  const handleAcceptApology = () => {
+    setAcceptedApology(true);
+    createFloatingHearts();
+    
+    toast({
+      title: "Apology Accepted",
+      description: `${defaultMessage.sender} has been notified that you accepted their apology.`,
+    });
   };
   
   const handleInPersonAccept = () => {
@@ -187,189 +157,106 @@ const HeartfeltBloom = () => {
           <div className="w-12 h-0.5 bg-pink-200 mx-auto" />
         </div>
         
-        {!showTypingInterface ? (
-          <div className="space-y-6">
-            <p className="font-handwriting text-xl text-bloom-text leading-relaxed">
-              {defaultMessage.message}
+        <div className="space-y-6">
+          <p className="font-handwriting text-xl text-bloom-text leading-relaxed">
+            {defaultMessage.message}
+          </p>
+          
+          <div className="text-right">
+            <p className="font-handwriting text-xl text-pink-500">
+              {defaultMessage.sender}
             </p>
+          </div>
+          
+          <div className="flex flex-col gap-4 mt-8">
+            <Button
+              onClick={handleAcceptApology}
+              className="bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white"
+            >
+              <Heart className="mr-2 h-4 w-4" />
+              Accept Apology
+            </Button>
             
-            <div className="text-right">
-              <p className="font-handwriting text-xl text-pink-500">
-                {defaultMessage.sender}
-              </p>
-            </div>
-            
-            <div className="flex flex-col gap-4 mt-8">
-              <Button
-                onClick={() => setShowTypingInterface(true)}
-                className="bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white"
-              >
-                Write Your Own Message
-              </Button>
-              
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="border-pink-200 text-bloom-text hover:bg-pink-50">
-                    <MapPin className="mr-2 h-4 w-4 text-pink-400" />
-                    Meet In Person
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80">
-                  <div className="space-y-4">
-                    <h4 className="font-medium">In-person Apology</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {defaultMessage.sender} would like to meet you at:
-                    </p>
-                    <div className="bg-pink-50 p-3 rounded-md text-sm space-y-2">
-                      <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-2 text-pink-400" />
-                        <span>Blossom Gardens, 123 Petal Lane</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2 text-pink-400" />
-                        <span>This Saturday, 2:00 PM</span>
-                      </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="border-pink-200 text-bloom-text hover:bg-pink-50">
+                  <MapPin className="mr-2 h-4 w-4 text-pink-400" />
+                  Meet In Person
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-4">
+                  <h4 className="font-medium">In-person Apology</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {defaultMessage.sender} would like to meet you at:
+                  </p>
+                  <div className="bg-pink-50 p-3 rounded-md text-sm space-y-2">
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-2 text-pink-400" />
+                      <span>Blossom Gardens, 123 Petal Lane</span>
                     </div>
-                    <div className="flex gap-2 mt-4">
-                      <Button 
-                        className="flex-1 bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white" 
-                        onClick={handleInPersonAccept}
-                      >
-                        Accept
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="flex-1" 
-                        onClick={handleInPersonReject}
-                      >
-                        Decline
-                      </Button>
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-2 text-pink-400" />
+                      <span>This Saturday, 2:00 PM</span>
                     </div>
                   </div>
-                </PopoverContent>
-              </Popover>
-              
-              <Button 
-                onClick={() => setShowMemories(!showMemories)} 
-                className="bg-transparent hover:bg-pink-50 text-bloom-text border border-pink-200"
-              >
-                <Image className="mr-2 h-4 w-4 text-pink-400" />
-                Moments Spent Together
-              </Button>
-            </div>
-            
-            {showMemories && (
-              <div className="py-4 animate-fade-in bg-pink-50/50 backdrop-blur-sm rounded-lg p-4">
-                <h3 className="font-handwriting text-2xl text-center text-pink-500 mb-4">Our Memories</h3>
-                
-                <Carousel className="w-full">
-                  <CarouselContent>
-                    {sharedMoments.map((moment) => (
-                      <CarouselItem key={moment.id}>
-                        <div className="p-1">
-                          <div className="overflow-hidden rounded-lg shadow-md">
-                            <img 
-                              src={moment.url} 
-                              alt={moment.title} 
-                              className="w-full h-48 object-cover hover:scale-105 transition-all duration-500"
-                            />
-                          </div>
-                          <p className="text-center mt-2 text-sm font-montserrat text-bloom-text">
-                            {moment.title}
-                          </p>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="left-0" />
-                  <CarouselNext className="right-0" />
-                </Carousel>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-6 animate-fade-in">
-            {!isTypingComplete ? (
-              <>
-                <div className="min-h-[100px] font-handwriting text-xl text-bloom-text leading-relaxed">
-                  {typingText}
-                  <span className="typing-cursor">|</span>
-                </div>
-                <Button
-                  onClick={() => {
-                    setIsTypingComplete(true);
-                  }}
-                  variant="outline"
-                  className="border-pink-200 text-bloom-text"
-                >
-                  Skip Animation
-                </Button>
-              </>
-            ) : (
-              <>
-                {typedMessage ? (
-                  <>
-                    <p className="font-handwriting text-xl text-bloom-text leading-relaxed">
-                      {typedMessage}
-                    </p>
-                    <div className="text-right">
-                      <p className="font-handwriting text-xl text-pink-500">
-                        {defaultMessage.sender}
-                      </p>
-                    </div>
-                    <Button
-                      onClick={() => {
-                        setShowTypingInterface(false);
-                        setTypedMessage("");
-                        setTypingText("");
-                        setIsTypingComplete(false);
-                      }}
-                      className="bg-pink-100 hover:bg-pink-200 text-bloom-text border border-pink-200"
+                  <div className="flex gap-2 mt-4">
+                    <Button 
+                      className="flex-1 bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white" 
+                      onClick={handleInPersonAccept}
                     >
-                      <X className="mr-2 h-4 w-4" />
-                      Close Editor
+                      Accept
                     </Button>
-                  </>
-                ) : (
-                  <>
-                    <div className="space-y-4">
-                      <label htmlFor="message" className="block text-sm font-medium text-bloom-text">
-                        Write your heartfelt message:
-                      </label>
-                      <textarea
-                        ref={messageRef}
-                        id="message"
-                        rows={5}
-                        className="w-full rounded-md border border-pink-200 bg-white/90 px-3 py-2 text-sm"
-                        placeholder="Express your heartfelt apology here..."
-                      ></textarea>
-                      <div className="flex space-x-2">
-                        <Button
-                          onClick={handleSendMessage}
-                          className="bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white"
-                        >
-                          <Send className="mr-2 h-4 w-4" />
-                          Send Message
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setShowTypingInterface(false);
-                            setTypingText("");
-                            setIsTypingComplete(false);
-                          }}
-                          variant="outline"
-                          className="border-pink-200 text-bloom-text"
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </>
-            )}
+                    <Button 
+                      variant="outline" 
+                      className="flex-1" 
+                      onClick={handleInPersonReject}
+                    >
+                      Decline
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+            
+            <Button 
+              onClick={() => setShowMemories(!showMemories)} 
+              className="bg-transparent hover:bg-pink-50 text-bloom-text border border-pink-200"
+            >
+              <Image className="mr-2 h-4 w-4 text-pink-400" />
+              Moments Spent Together
+            </Button>
           </div>
-        )}
+          
+          {showMemories && (
+            <div className="py-4 animate-fade-in bg-pink-50/50 backdrop-blur-sm rounded-lg p-4">
+              <h3 className="font-handwriting text-2xl text-center text-pink-500 mb-4">Our Memories</h3>
+              
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {sharedMoments.map((moment) => (
+                    <CarouselItem key={moment.id}>
+                      <div className="p-1">
+                        <div className="overflow-hidden rounded-lg shadow-md">
+                          <img 
+                            src={moment.url} 
+                            alt={moment.title} 
+                            className="w-full h-48 object-cover hover:scale-105 transition-all duration-500"
+                          />
+                        </div>
+                        <p className="text-center mt-2 text-sm font-montserrat text-bloom-text">
+                          {moment.title}
+                        </p>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-0" />
+                <CarouselNext className="right-0" />
+              </Carousel>
+            </div>
+          )}
+        </div>
       </div>
       
       {/* Video trigger */}
