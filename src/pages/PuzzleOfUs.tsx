@@ -1,10 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { Video, Puzzle } from 'lucide-react';
-import BackToHome from '@/components/BackToHome';
+import { Video, Puzzle, MapPin, Calendar } from 'lucide-react';
 import VideoModal from '@/components/VideoModal';
 import AudioPlayer from '@/components/AudioPlayer';
 import { toast } from '@/components/ui/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
 // This would be a prop in production
 const defaultMessage = {
@@ -18,7 +20,13 @@ const defaultMessage = {
 const PuzzleOfUs = () => {
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [puzzleSolved, setPuzzleSolved] = useState(false);
-  const [pieces, setPieces] = useState<Array<{id: number, solved: boolean}>>([]);
+  const [showApologyAccepted, setShowApologyAccepted] = useState(false);
+  const [showInPersonApology, setShowInPersonApology] = useState(false);
+  
+  // For the number matching puzzle
+  const [puzzleNumbers, setPuzzleNumbers] = useState<Array<{id: number, value: number, flipped: boolean, matched: boolean}>>([]);
+  const [flippedCards, setFlippedCards] = useState<number[]>([]);
+  const [canFlip, setCanFlip] = useState(true);
   
   // Reference to get access to the stopAudio method
   const stopAudio = () => {
@@ -28,36 +36,107 @@ const PuzzleOfUs = () => {
     }
   };
 
-  // Initialize puzzle pieces
+  // Initialize puzzle numbers
   useEffect(() => {
-    const newPieces = Array.from({ length: 6 }, (_, i) => ({
-      id: i,
-      solved: false
+    // Create pairs of numbers 1-6
+    const numbers = [...Array(6).keys()].map(i => i + 1);
+    const pairs = [...numbers, ...numbers];
+    
+    // Shuffle the array
+    const shuffled = pairs.sort(() => Math.random() - 0.5);
+    
+    const newPuzzleNumbers = shuffled.map((value, index) => ({
+      id: index,
+      value,
+      flipped: false,
+      matched: false
     }));
     
-    setPieces(newPieces);
+    setPuzzleNumbers(newPuzzleNumbers);
   }, []);
 
-  const handlePieceClick = (id: number) => {
-    const newPieces = [...pieces];
-    newPieces[id].solved = true;
-    setPieces(newPieces);
+  const handleCardFlip = (id: number) => {
+    if (!canFlip) return;
     
-    // Check if all pieces are solved
-    if (newPieces.every(piece => piece.solved)) {
-      setTimeout(() => {
-        setPuzzleSolved(true);
-        toast({
-          title: "Puzzle Completed!",
-          description: "You've revealed the apology message.",
-        });
-      }, 500);
+    // Don't allow flipping already matched or flipped cards
+    if (puzzleNumbers[id].matched || puzzleNumbers[id].flipped) return;
+    
+    // Flip the card
+    const newPuzzleNumbers = [...puzzleNumbers];
+    newPuzzleNumbers[id].flipped = true;
+    setPuzzleNumbers(newPuzzleNumbers);
+    
+    // Add to flipped cards array
+    const newFlippedCards = [...flippedCards, id];
+    setFlippedCards(newFlippedCards);
+    
+    // If we have flipped 2 cards
+    if (newFlippedCards.length === 2) {
+      setCanFlip(false);
+      
+      // Check if they match
+      const [first, second] = newFlippedCards;
+      if (puzzleNumbers[first].value === puzzleNumbers[second].value) {
+        // Mark as matched
+        setTimeout(() => {
+          const updatedPuzzleNumbers = [...newPuzzleNumbers];
+          updatedPuzzleNumbers[first].matched = true;
+          updatedPuzzleNumbers[second].matched = true;
+          setPuzzleNumbers(updatedPuzzleNumbers);
+          setFlippedCards([]);
+          setCanFlip(true);
+          
+          // Check if all are matched
+          if (updatedPuzzleNumbers.every(card => card.matched)) {
+            setTimeout(() => {
+              setPuzzleSolved(true);
+              toast({
+                title: "Puzzle Completed!",
+                description: "You've revealed the apology message.",
+              });
+            }, 500);
+          }
+        }, 800);
+      } else {
+        // Flip back if no match
+        setTimeout(() => {
+          const updatedPuzzleNumbers = [...newPuzzleNumbers];
+          updatedPuzzleNumbers[first].flipped = false;
+          updatedPuzzleNumbers[second].flipped = false;
+          setPuzzleNumbers(updatedPuzzleNumbers);
+          setFlippedCards([]);
+          setCanFlip(true);
+        }, 1000);
+      }
     }
+  };
+
+  const handleApologyAccept = () => {
+    setShowApologyAccepted(true);
+    toast({
+      title: "Apology Accepted",
+      description: `${defaultMessage.sender} has been notified of your forgiveness.`,
+    });
+  };
+
+  const handleInPersonAccept = () => {
+    toast({
+      title: "Meeting Accepted",
+      description: `${defaultMessage.sender} has been notified that you accepted the meeting.`,
+    });
+    setShowInPersonApology(false);
+  };
+
+  const handleInPersonReject = () => {
+    toast({
+      title: "Meeting Declined",
+      description: `${defaultMessage.sender} has been notified that you declined the meeting.`,
+    });
+    setShowInPersonApology(false);
   };
 
   return (
     <div className="min-h-screen overflow-hidden relative flex items-center justify-center p-6 bg-puzzle-gradient">
-      <BackToHome />
       <AudioPlayer src={defaultMessage.audioUrl} />
       
       <div className="puzzle-card w-full max-w-md z-10 animate-fade-in">
@@ -74,30 +153,36 @@ const PuzzleOfUs = () => {
         {!puzzleSolved ? (
           <div className="space-y-6">
             <p className="text-center text-puzzle-text/80 mb-8">
-              To see my apology, please complete the puzzle below
+              To see my apology, please solve the matching puzzle below
             </p>
             
-            <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
-              {pieces.map(piece => (
+            <div className="grid grid-cols-4 gap-3 max-w-sm mx-auto">
+              {puzzleNumbers.map(card => (
                 <div 
-                  key={piece.id} 
+                  key={card.id} 
                   className={`
-                    aspect-square rounded-lg puzzle-piece
-                    ${piece.solved 
+                    aspect-square rounded-lg puzzle-card
+                    ${card.flipped || card.matched 
                       ? 'bg-puzzle-primary text-white' 
                       : 'bg-puzzle-secondary/50 text-puzzle-text/60'}
+                    cursor-pointer transition-all duration-300
                   `}
-                  onClick={() => !piece.solved && handlePieceClick(piece.id)}
+                  onClick={() => handleCardFlip(card.id)}
                 >
                   <div className="h-full flex items-center justify-center">
-                    <Puzzle className={`h-12 w-12 ${piece.solved ? 'text-white' : 'text-puzzle-primary/50'}`} />
+                    {(card.flipped || card.matched) && (
+                      <span className="text-2xl font-bold">{card.value}</span>
+                    )}
+                    {!card.flipped && !card.matched && (
+                      <Puzzle className="h-8 w-8 text-puzzle-primary/50" />
+                    )}
                   </div>
                 </div>
               ))}
             </div>
             
             <p className="text-center text-sm text-puzzle-text/60 italic">
-              Click each piece to complete the puzzle
+              Find matching pairs to complete the puzzle
             </p>
           </div>
         ) : (
@@ -114,11 +199,56 @@ const PuzzleOfUs = () => {
               </p>
             </div>
             
-            <button
-              className="w-full py-3 px-6 bg-puzzle-primary hover:bg-puzzle-primary/80 text-white rounded-lg font-medium transition-all duration-300"
-            >
-              I Forgive You
-            </button>
+            <div className="flex gap-4">
+              <Button
+                className="flex-1 bg-puzzle-primary hover:bg-puzzle-primary/80 text-white"
+                onClick={handleApologyAccept}
+              >
+                I Forgive You
+              </Button>
+              
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="flex-1">
+                    <MapPin className="mr-2 h-4 w-4" />
+                    Meet In Person
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-4">
+                    <h4 className="font-medium">In-person Apology</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {defaultMessage.sender} would like to meet you at:
+                    </p>
+                    <div className="bg-muted p-3 rounded-md text-sm space-y-2">
+                      <div className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-2 text-puzzle-primary" />
+                        <span>The Local Café, 123 Main Street</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2 text-puzzle-primary" />
+                        <span>This Saturday, 3:00 PM</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <Button 
+                        className="flex-1 bg-puzzle-primary" 
+                        onClick={handleInPersonAccept}
+                      >
+                        Accept
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="flex-1" 
+                        onClick={handleInPersonReject}
+                      >
+                        Decline
+                      </Button>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
         )}
       </div>
@@ -139,6 +269,26 @@ const PuzzleOfUs = () => {
         videoSrc={defaultMessage.videoUrl}
         stopAudio={stopAudio}
       />
+      
+      {/* Apology accepted dialog */}
+      <Dialog open={showApologyAccepted} onOpenChange={setShowApologyAccepted}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Apology Accepted!</DialogTitle>
+            <DialogDescription>
+              {defaultMessage.sender} has been notified that you've accepted their apology.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center my-4">
+            <div className="rounded-full bg-green-100 p-4">
+              <Puzzle className="h-8 w-8 text-green-500" />
+            </div>
+          </div>
+          <p className="text-center text-muted-foreground">
+            Thank you for rebuilding your connection.
+          </p>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

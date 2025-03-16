@@ -1,142 +1,303 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 240 10% 3.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 240 10% 3.9%;
+ 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
+    --popover-foreground: 240 10% 3.9%;
+ 
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+ 
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+ 
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+ 
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+ 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+ 
     --radius: 0.5rem;
+
+    /* Custom Variables */
+
+    /* Bloom Theme */
+    --bloom-primary: 350, 85%, 80%;
+    --bloom-secondary: 340, 90%, 95%;
+    --bloom-accent: 335, 80%, 60%;
+    --bloom-text: 340, 30%, 30%;
+    --bloom-background: 340, 70%, 98%;
+
+    /* Cosmic Theme */
+    --cosmic-primary: 240, 50%, 10%;
+    --cosmic-secondary: 255, 70%, 70%;
+    --cosmic-text: 240, 20%, 90%;
+    --cosmic-accent: 260, 60%, 60%;
+
+    /* Puzzle Theme */
+    --puzzle-primary: 180, 80%, 45%;
+    --puzzle-secondary: 190, 70%, 80%;
+    --puzzle-text: 195, 40%, 30%;
+    --puzzle-background: 180, 30%, 95%;
+
+    /* Rainy Theme */
+    --rainy-primary: 210, 20%, 20%;
+    --rainy-secondary: 210, 80%, 60%;
+    --rainy-text: 210, 30%, 30%;
+    --rainy-background: 200, 30%, 95%;
   }
-
+ 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+ 
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+ 
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+ 
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+ 
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+ 
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+ 
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+ 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --destructive-foreground: 0 0% 98%;
+ 
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
   }
 }
-
+ 
 @layer base {
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-@layer components {
-  .glass-morphism {
-    @apply bg-white/20 backdrop-blur-lg rounded-2xl border border-white/10 shadow-glass;
-  }
+/* Common styles */
+.video-trigger {
+  @apply fixed bottom-5 right-5 z-20 h-12 w-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-white/30 transition-all;
+}
 
-  .neo-morphism {
-    @apply bg-white rounded-2xl shadow-neo;
-  }
+/* Heartfelt Bloom Theme */
 
-  .parallax-effect {
-    transform-style: preserve-3d;
-    transition: all 0.5s ease;
-  }
+.font-handwriting {
+  font-family: 'Dancing Script', cursive;
+}
 
-  .typed-text {
-    @apply overflow-hidden whitespace-nowrap border-r-4 pr-1 animate-typing;
-  }
+.bg-bloom-gradient {
+  background: linear-gradient(135deg, hsl(var(--bloom-background)), hsl(var(--bloom-secondary)));
+}
 
-  .bloom-card {
-    @apply bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-soft border border-bloom-primary/30;
-  }
+.bloom-card {
+  @apply bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-pink-100;
+}
 
-  .cosmic-card {
-    @apply bg-cosmic-primary/90 backdrop-blur-sm text-cosmic-text rounded-2xl p-8 shadow-soft border border-cosmic-secondary/30;
-  }
+.petal {
+  @apply absolute rounded-full opacity-50 animate-petal-fall;
+}
 
-  .puzzle-card {
-    @apply bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-soft border border-puzzle-primary/30;
+@keyframes petal-fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 0;
   }
+  10% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
 
-  .rainy-card {
-    @apply bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-soft border border-rainy-secondary/30;
-  }
+/* Cosmic Sorry Theme */
 
-  .video-trigger {
-    @apply fixed bottom-10 right-10 bg-white/20 backdrop-blur-md p-4 rounded-full shadow-lg cursor-pointer transition-all duration-300 
-    hover:bg-white/40 hover:scale-110 z-50;
-  }
+.bg-cosmic-primary {
+  background-color: hsl(var(--cosmic-primary));
+}
 
-  .petal {
-    @apply absolute rounded-full opacity-0 pointer-events-none;
-    animation: petal-fall linear forwards;
-    animation-duration: calc(10s + (var(--random) * 10s));
-    left: calc(var(--random) * 100%);
-    transform: rotate(calc(var(--random) * 360deg));
-  }
+.bg-cosmic-gradient {
+  background: radial-gradient(ellipse at center, hsl(260, 40%, 20%), hsl(var(--cosmic-primary)));
+}
 
-  .ripple-container {
-    @apply relative overflow-hidden;
-  }
+.cosmic-card {
+  @apply bg-black/20 backdrop-blur-md p-8 rounded-2xl border border-purple-500/20 shadow-lg text-white;
+}
 
-  .ripple-effect {
-    @apply absolute rounded-full pointer-events-none bg-rainy-secondary/30;
-    animation: ripple 3s linear forwards;
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
   }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.4;
+  }
+}
 
-  .puzzle-piece {
-    @apply transition-all duration-300 cursor-pointer hover:scale-105;
+.animate-breathe {
+  animation: breathe 8s ease-in-out infinite;
+}
+
+/* Puzzle of Us Theme */
+
+.bg-puzzle-gradient {
+  background: linear-gradient(135deg, hsl(180, 30%, 95%), hsl(190, 60%, 90%));
+}
+
+.puzzle-card {
+  @apply bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-teal-100;
+}
+
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.font-lato {
+  font-family: 'Lato', sans-serif;
+}
+
+/* Rainy Day Theme */
+
+.bg-rainy-gradient {
+  background: linear-gradient(135deg, hsl(210, 30%, 95%), hsl(210, 40%, 90%));
+}
+
+.rainy-card {
+  @apply bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-blue-100;
+}
+
+.ripple-container {
+  @apply relative overflow-hidden;
+}
+
+.ripple-effect {
+  @apply absolute rounded-full bg-blue-400/20 animate-ripple;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes ripple {
+  0% {
+    width: 0px;
+    height: 0px;
+    opacity: 0.8;
   }
+  100% {
+    width: 400px;
+    height: 400px;
+    opacity: 0;
+  }
+}
+
+.animate-ripple {
+  animation: ripple 3s ease-out;
+}
+
+/* Global Animations */
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animate-fade-in-slow {
+  animation: fadeIn 1.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulseSoft 3s infinite;
+}
+
+@keyframes pulseSoft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ADDITIONAL NEW ANIMATIONS */
+
+/* Typing cursor animation */
+.typing-cursor {
+  animation: cursor-blink 0.8s infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Floating hearts animation */
+.floating-heart {
+  position: absolute;
+  animation: float-up 5s ease-out forwards;
+  transform-origin: center;
+}
+
+@keyframes float-up {
+  0% {
+    transform: translateY(100%) scale(0.5) rotate(0deg);
+    opacity: 0.4;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) scale(1.5) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+/* Glass morphism effect */
+.glass-morphism {
+  @apply bg-white/70 backdrop-blur-md border border-white/30 shadow-lg;
 }
